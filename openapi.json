@@ -1,0 +1,821 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Move-App API",
+    "contact": {
+      "name": "Contact our support",
+      "email": "engineering@moveapp.com"
+    },
+    "x-logo": {
+      "url": "https://redocly.github.io/openapi-template/logo.png",
+      "altText": "Move App logo"
+    },
+    "description": "This is the official specification of all backend services of **Move-App**.\n# Introduction\nThis API definition is intended to to be a good starting point to create integrations with Move-App ecossystem, following the OpenAPI guidelines.\n"
+  },
+  "externalDocs": {
+    "description": "Click here to see the project repository",
+    "url": "https://github.com/imattferreira/move-app"
+  },
+  "tags": [
+    { "name": "Account", "description": "Actions on user accounts" },
+    { "name": "Ride", "description": "Actions on rides" },
+    { "name": "Position", "description": "Actions on positions of a ride" },
+    { "name": "Transaction", "description": "Actions on transactions" }
+  ],
+  "servers": [{ "url": "https://api.moveapp.com" }],
+  "paths": {
+    "/v1/signup": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "Create a new account",
+        "description": "This operation creates a new account profile",
+        "operationId": "createAccount",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "discriminator": {
+                  "mapping": {
+                    "driver": "#/components/schemas/Driver",
+                    "passenger": "#/components/schemas/Passenger"
+                  }
+                },
+                "anyOf": [
+                  { "$ref": "#/components/schemas/Driver" },
+                  { "$ref": "#/components/schemas/Passenger" }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully created an account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "account_id": {
+                      "description": "Acccount identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "invalid [password] field"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "[email] already registered"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/{account_id}": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Get informations of a account",
+        "description": "This operation get infos of a account profile",
+        "operationId": "getAccountInfo",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "description": "Identifier of account",
+            "$ref": "#/components/parameters/Identifier",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "cpf",
+                    "is_passenger",
+                    "is_driver"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Acccount identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "User's name",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "User's email address",
+                      "example": "john_doe@email.com"
+                    },
+                    "cpf": {
+                      "type": "string",
+                      "description": "User's CPF",
+                      "example": "123.456.788-12"
+                    },
+                    "car_plate": {
+                      "type": "string",
+                      "description": "Plate of driver car",
+                      "example": "ABC1234"
+                    },
+                    "is_passenger": {
+                      "type": "boolean",
+                      "description": "Check if account is from a passenger",
+                      "example": true
+                    },
+                    "is_driver": {
+                      "type": "boolean",
+                      "description": "Check if account is from a driver",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "account not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/positions": {
+      "post": {
+        "tags": ["Position"],
+        "summary": "Register a new position",
+        "description": "This operation registers a new position to ride",
+        "operationId": "registerPosition",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Position" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successfully registered" },
+          "400": {
+            "description": "Invalid field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "invalid [lat] field"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ride is not started yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride is not in progress"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/rides": {
+      "post": {
+        "tags": ["Ride"],
+        "summary": "Request a ride",
+        "description": "This operation allows a passenger to request a ride",
+        "operationId": "requestRide",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Ride" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "400": {
+              "description": "Invalid field",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "error message",
+                        "example": "invalid [lat] field"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successfully requested ride",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "ride_id": {
+                      "description": "Ride identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid requested account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "account needs to be of a passenger"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Passenger not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "account not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already have a active ride",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "account already have a ride in progress"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/rides/{ride_id}": {
+      "get": {
+        "tags": ["Ride"],
+        "summary": "Get informations of a ride",
+        "description": "This operation get infos of a ride",
+        "operationId": "getRideInfo",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "ride_id",
+            "in": "path",
+            "description": "Identifier of ride",
+            "$ref": "#/components/parameters/Identifier",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "id",
+                    "passenger_id",
+                    "passenger_name",
+                    "status",
+                    "from_lat",
+                    "from_long",
+                    "to_lat",
+                    "to_long",
+                    "date"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Ride identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    },
+                    "passenger_id": {
+                      "description": "Passenger identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    },
+                    "driver_id": {
+                      "description": "Driver identifier",
+                      "$ref": "#/components/schemas/Identifier"
+                    },
+                    "passenger_name": {
+                      "type": "string",
+                      "description": "Passenger's name",
+                      "example": "John Doe"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Status of ride",
+                      "enum": [
+                        "requested",
+                        "accepted",
+                        "in_progress",
+                        "completed"
+                      ],
+                      "example": "in_progress"
+                    },
+                    "from_lat": {
+                      "description": "Latitude start point",
+                      "$ref": "#/components/schemas/Latitude"
+                    },
+                    "from_long": {
+                      "description": "Longitude start point",
+                      "$ref": "#/components/schemas/Longitude"
+                    },
+                    "to_lat": {
+                      "description": "Latitude end point",
+                      "type": "number",
+                      "$ref": "#/components/schemas/Latitude"
+                    },
+                    "to_long": {
+                      "description": "Longitude end point",
+                      "$ref": "#/components/schemas/Longitude"
+                    },
+                    "date": {
+                      "description": "DateTime when ride was requested",
+                      "$ref": "#/components/schemas/DateTime"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Ride"],
+        "summary": "Mark ride as started",
+        "description": "This operation starts a ride",
+        "operationId": "startRide",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "ride_id",
+            "in": "path",
+            "description": "Identifier of ride",
+            "$ref": "#/components/parameters/Identifier",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": { "description": "Ride started" },
+          "404": {
+            "description": "Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/rides/{ride_id}/{driver_id}": {
+      "post": {
+        "tags": ["Ride"],
+        "summary": "Accept a ride",
+        "description": "This operation allows a driver to accept a ride",
+        "operationId": "acceptRide",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["ride_id", "driver_id"],
+                "properties": {
+                  "ride_id": {
+                    "description": "Ride identifier",
+                    "$ref": "#/components/schemas/Identifier"
+                  },
+                  "driver_id": {
+                    "description": "Driver identifier",
+                    "$ref": "#/components/schemas/Identifier"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successfully requested ride" },
+          "403": {
+            "description": "User is not a driver",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "account needs to be of a driver to accept a ride"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Driver **or** Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "driver not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Driver already have an active ride **or** ride already accepted by another driver",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride already accepted by another driver"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/rides/{ride_id}/finish": {
+      "patch": {
+        "tags": ["Ride"],
+        "summary": "Mark ride as finished",
+        "description": "This operation finishes a ride",
+        "operationId": "finishRide",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "ride_id",
+            "in": "path",
+            "description": "Identifier of ride",
+            "$ref": "#/components/parameters/Identifier",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": { "description": "Ride finished" },
+          "404": {
+            "description": "Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/payments/rides": {
+      "post": {
+        "tags": ["Transaction"],
+        "summary": "Process and charges the payment of a ride",
+        "description": "This operation process the payment of a ride",
+        "operationId": "processPayment",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RidePayment" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successfully processed" },
+          "400": {
+            "description": "Invalid field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "invalid [amount] field"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ride not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "error message",
+                      "example": "ride not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "required": ["name", "email", "cpf", "password"],
+        "properties": {
+          "name": {
+            "description": "User's name",
+            "type": "string",
+            "pattern": "/[a-zA-Z] [a-zA-Z]+/",
+            "example": "John Doe"
+          },
+          "email": {
+            "description": "User's email address",
+            "type": "string",
+            "format": "email",
+            "example": "john_doe@email.com"
+          },
+          "cpf": {
+            "description": "User's CPF",
+            "type": "string",
+            "example": "123.456.788-12"
+          },
+          "password": {
+            "description": "User's pasword access",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 32,
+            "example": "^Nab6TTUxE5h"
+          }
+        }
+      },
+      "Driver": {
+        "description": "Example of a account profile of a driver",
+        "allOf": [
+          { "$ref": "#/components/schemas/Account" },
+          {
+            "type": "object",
+            "properties": {
+              "car_plate": {
+                "type": "string",
+                "description": "Set plate of driver car",
+                "example": "ABC1234"
+              },
+              "is_driver": {
+                "type": "boolean",
+                "description": "Set account as a driver",
+                "default": false
+              }
+            },
+            "required": ["car_plate", "is_driver"]
+          }
+        ]
+      },
+      "Passenger": {
+        "description": "Example of a account profile of a passenger",
+        "allOf": [
+          { "$ref": "#/components/schemas/Account" },
+          {
+            "type": "object",
+            "properties": {
+              "is_passenger": {
+                "type": "boolean",
+                "description": "Set account as a passenger",
+                "default": false
+              }
+            },
+            "required": ["is_passenger"]
+          }
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "example": "24dfa97f-16b9-44d4-a92f-303602f3edc1"
+      },
+      "Position": {
+        "type": "object",
+        "required": ["ride_id", "lat", "long"],
+        "properties": {
+          "ride_id": {
+            "description": "Ride identifier",
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "lat": {
+            "description": "Current Latitude",
+            "type": "number",
+            "example": -22.3027467
+          },
+          "long": {
+            "description": "Current Longitude",
+            "type": "number",
+            "example": -49.0716105
+          }
+        }
+      },
+      "Latitude": { "type": "number", "example": -22.3027467 },
+      "Longitude": { "type": "number", "example": -49.0716105 },
+      "Ride": {
+        "type": "object",
+        "required": [
+          "passenger_id",
+          "from_lat",
+          "from_long",
+          "to_lat",
+          "to_long"
+        ],
+        "properties": {
+          "passenger_id": {
+            "description": "Passenger identifier",
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "from_lat": {
+            "description": "Latitude start point",
+            "$ref": "#/components/schemas/Latitude"
+          },
+          "from_long": {
+            "description": "Longitude start point",
+            "$ref": "#/components/schemas/Longitude"
+          },
+          "to_lat": {
+            "description": "Latitude end point",
+            "$ref": "#/components/schemas/Latitude"
+          },
+          "to_long": {
+            "description": "Longitude end point",
+            "$ref": "#/components/schemas/Longitude"
+          }
+        }
+      },
+      "DateTime": { "type": "string", "example": "2024-12-12T00:22:24.676Z" },
+      "RidePayment": {
+        "type": "object",
+        "required": ["ride_id", "amount"],
+        "properties": {
+          "ride_id": {
+            "description": "Ride identifier",
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "amount": {
+            "description": "Amount to be charged",
+            "type": "number",
+            "example": 120.21
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Identifier": {
+        "type": "string",
+        "example": "24dfa97f-16b9-44d4-a92f-303602f3edc1"
+      }
+    }
+  }
+}

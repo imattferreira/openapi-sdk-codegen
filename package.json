@@ -1,0 +1,13 @@
+{
+  "name": "@move-app/sdk-codegen",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "generate": "tsx src/main.ts ./openapi.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
