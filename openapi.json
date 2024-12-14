@@ -669,6 +669,7 @@
     "schemas": {
       "Account": {
         "type": "object",
+        "description": "Example of a generic account profile",
         "required": ["name", "email", "cpf", "password"],
         "properties": {
           "name": {
@@ -712,6 +713,7 @@
               "is_driver": {
                 "type": "boolean",
                 "description": "Set account as a driver",
+                "example": true,
                 "default": false
               }
             },
@@ -729,6 +731,7 @@
               "is_passenger": {
                 "type": "boolean",
                 "description": "Set account as a passenger",
+                "example": true,
                 "default": false
               }
             },
@@ -737,10 +740,12 @@
         ]
       },
       "Identifier": {
+        "description": "Example of a identifier of a entity following the UUID v4 spec",
         "type": "string",
         "example": "24dfa97f-16b9-44d4-a92f-303602f3edc1"
       },
       "Position": {
+        "description": "Example of a position of a ride",
         "type": "object",
         "required": ["ride_id", "lat", "long"],
         "properties": {
@@ -760,9 +765,18 @@
           }
         }
       },
-      "Latitude": { "type": "number", "example": -22.3027467 },
-      "Longitude": { "type": "number", "example": -49.0716105 },
+      "Latitude": {
+        "description": "Example of a latitude",
+        "type": "number",
+        "example": -22.3027467
+      },
+      "Longitude": {
+        "description": "Example of a longitude",
+        "type": "number",
+        "example": -49.0716105
+      },
       "Ride": {
+        "description": "Example of a ride",
         "type": "object",
         "required": [
           "passenger_id",
@@ -794,8 +808,13 @@
           }
         }
       },
-      "DateTime": { "type": "string", "example": "2024-12-12T00:22:24.676Z" },
+      "DateTime": {
+        "description": "Example of a datetime following the ISO-8601 spec",
+        "type": "string",
+        "example": "2024-12-12T00:22:24.676Z"
+      },
       "RidePayment": {
+        "description": "Example of a ride payment",
         "type": "object",
         "required": ["ride_id", "amount"],
         "properties": {
@@ -813,6 +832,7 @@
     },
     "parameters": {
       "Identifier": {
+        "description": "Example of a identifier of a entity following the UUID v4 spec",
         "type": "string",
         "example": "24dfa97f-16b9-44d4-a92f-303602f3edc1"
       }

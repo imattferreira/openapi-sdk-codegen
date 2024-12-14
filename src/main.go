@@ -35,6 +35,8 @@ func main() {
 		return
 	}
 
-	translatedSpecification := openapi.TranslateSpecification(specification)
-	codegen.Start(translatedSpecification)
+	translator := openapi.Translator{}
+	translated := translator.Translate(specification)
+
+	codegen.Generate(translated)
 }

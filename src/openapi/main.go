@@ -19,66 +19,31 @@ type OpenApiServer struct {
 type OpenApiPathRequestBody struct {
 	Content struct {
 		Json struct {
-			Schema interface{} `json:"schema"`
+			Schema OpenApiGenericSchema `json:"schema"`
 		} `json:"application/json"`
 	} `json:"content"`
 }
 
 type OpenApiParam struct {
-	Name        string  `json:"name"`
-	Location    string  `json:"in"`
-	Description string  `json:"description"`
-	Ref         *string `json:"$ref"`
-	IsRequired  bool    `json:"required"`
-}
-
-// TODO: make type assertion
-// type OpenApiSchemaInlineProp struct {
-// 	Description string    `json:"description"`
-// 	Enum        *[]string `json:"enum"`
-// 	Example     any    `json:"example"`
-// 	Type        string    `json:"type"`
-// }
-
-// type OpenApiSchemaReferencedProp struct {
-// 	Description string `json:"description"`
-// 	Ref         string `json:"$ref"`
-// }
-
-// type OpenApiInlineSchema struct {
-// 	Properties map[string]interface{} `json:"properties"`
-// 	Required   *[]string              `json:"required"`
-// }
-
-// TODO: make type assertion
-// type OpenApiPathDiscriminatedSchema struct {
-// 	Discriminator struct {
-// 		Mapping map[string]string `json:"mapping"`
-// 	} `json:"discriminator"`
-// 	AnyOf []struct {
-// 		Ref string `json:"$ref"`
-// 	} `json:"anyOf"`
-// }
-
-//	type OpenApiPathReferencedSchema struct {
-//		Ref string `json:"$ref"`
-//	}
-
-type OpenApiGenericProp struct {
 	Default     *any      `json:"default"`
-	Description *string   `json:"description"`
+	Description string    `json:"description"`
 	Enum        *[]string `json:"enum"`
 	Example     *any      `json:"example"`
+	IsRequired  bool      `json:"required"`
+	Location    string    `json:"in"`
+	Name        string    `json:"name"`
 	Ref         *string   `json:"$ref"`
 	Type        *string   `json:"type"`
 }
 
 type OpenApiGenericSchema struct {
-	Description *string                        `json:"description"`
-	Properties  *map[string]OpenApiGenericProp `json:"properties"`
-	Ref         *string                        `json:"$ref"`
-	Required    *[]string                      `json:"required"`
-	Type        *string                        `json:"type"`
+	Description *string                          `json:"description"`
+	Enum        []any                            `json:"enum"`
+	Example     *any                             `json:"example"`
+	Properties  *map[string]OpenApiGenericSchema `json:"properties"`
+	Ref         *string                          `json:"$ref"`
+	Required    *[]string                        `json:"required"`
+	Type        *string                          `json:"type"`
 }
 
 type OpenApiResponse struct {
@@ -102,7 +67,7 @@ type OpenApiPath struct {
 }
 
 type OpenApiComponents struct {
-	Schemas *map[string]OpenApiGenericSchema `json:"schemas"`
+	Schemas map[string]OpenApiGenericSchema `json:"schemas"`
 }
 
 type OpenApiSpecification struct {
