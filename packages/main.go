@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/imattferreira/openapi-sdk-codegen/src/cli"
-	"github.com/imattferreira/openapi-sdk-codegen/src/codegen"
-	"github.com/imattferreira/openapi-sdk-codegen/src/openapi"
+	"github.com/imattferreira/openapi-sdk-codegen/packages/cli"
+	"github.com/imattferreira/openapi-sdk-codegen/packages/codegen"
+	"github.com/imattferreira/openapi-sdk-codegen/packages/openapi"
 )
 
 func main() {
